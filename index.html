@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Degrees of Thomas Pynchon</title>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" src="style.css">
+</head>
+<body>
+  <h1>"Thomas Pynchon loved this graph, almost as much as he loves cameras!"</h1>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="pynchon.js"></script>
+<script>
+  var data = pynchon;
+  var nodes = data.nodes;
+  var links = data.links;
+  var width = 1200,
+      height = 600,
+      margin = { top: 30, right: 40, bottom: 50, left: 50 };
+
+  var colors = d3.scale.category20();
+
+  var svg = d3.select('body').append('svg')
+    .attr('width', width + margin.right + margin.left)
+    .attr('height', height + margin.top + margin.bottom);
+
+  var xScale = d3.scale.linear()
+    .domain([0, nodes.length])
+    .range([0, height]);
+
+
+  // Draw nodes
+  nodes.forEach(function(d, i) {
+    d.x = Math.round(xScale(i)) + 50;
+    d.y = 500;
+  });
+
+  svg.selectAll('.node')
+    .data(nodes)
+    .enter()
+    .append('circle')
+      .attr('fill', function(d, i) {
+        return colors(i);
+      })
+      .attr('id', function(d, i) { return d.nodeName; })
+      .attr('cx', function(d, i) { return d.x; })
+      .attr('cy', function(d, i) { return d.y; })
+      .attr('r', 4)
+
+  svg.selectAll('text')
+    .data(nodes)
+    .enter()
+    .append('text')
+      .text(function(d, i) {
+        return d.nodeName;
+      })
+      .attr('x', function(d, i) { return d.x; })
+      .attr('y', function(d, i) { return d.y; })
+      .attr('transform', function(d, i) {
+        return 'rotate(90 ' + d.x + ',' + d.y + ')'
+      });
+
+
+  // Draw arcs
+  links.forEach(function(d, i) {
+    d.x = nodes[d.source].x - nodes[d.target].x,
+    d.y = nodes[d.source].y - nodes[d.target].y,
+    d.r = Math.sqrt(d.x * d.x + d.y * d.y)
+  });
+
+  svg.selectAll('path')
+    .data(links)
+    .enter()
+    .append('path')
+    .style('fill', 'transparent')
+    .style('stroke', function(d, i) {
+      return colors(i);
+    })
+    .attr('d', function(d) {
+      return 'M ' + nodes[d.source].x + ', ' + 300 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].x + ', ' + 300;
+    })
+    .attr('transform', 'translate(0, 200)');
+
+  // var arc = d3.svg.arc()
+  //   .startAngle(-.5 * Math.PI)
+  //   .endAngle(.5 * Math.PI)
+  //   .innerRadius(function(d, i) {
+  //     return 300 + (i * 2);
+  //   })
+  //   .outerRadius(function(d, i) {
+  //     return 300 + (i * 2.1);
+  //   })
+
+  // svg.selectAll('path')
+  //   .data(links)
+  //   .enter()
+  //   .append('path')
+  //   .attr('d', arc)
+  //   .style('fill', function(d, i) {
+  //     return colors(i);
+  //   })
+  //   .attr('transform', function(d, i) {
+  //     return 'translate(' + 300 + ',' + 500 + ')';
+  //   })
+  //   ;
+
+
+</script>
+
+</body>
+</html>
