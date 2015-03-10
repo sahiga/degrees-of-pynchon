@@ -138,6 +138,7 @@
 
   var redraw = function(obj) {
     var data = writers[obj.nodeName];
+    var ms = 800;
 
     if (data !== undefined) {
       fadeGraph();
@@ -156,7 +157,8 @@
           .attr('cy', function(d) { return d.y; })
           .attr('r', 4)
         .transition()
-        .delay(1500)
+        .delay(0)
+        .duration(ms)
         .attr('transform', function(d) {
           return 'translate(' + (width / 2 - d.cx) + ', 0)';
         });
@@ -166,7 +168,8 @@
         .enter()
         .append('line')
           .transition()
-          .delay(1500)
+          .delay(0)
+          .duration(ms)
           .attr('style', function(d, i) {
             return 'stroke: ' + d.color;
           })
@@ -202,7 +205,8 @@
           })
           .attr('x', function(d, i) { return d.cx; })
           .transition()
-          .delay(1500)
+          .delay(0)
+          .duration(ms)
           .attr('transform', function(d) {
             return 'translate(' + (width / 2 - d.cx - 120) + ', 0)';
           })
@@ -211,7 +215,7 @@
 
       setTimeout(function() {
         createGraph(data, g, centerColor);
-      }, 2500);
+      }, 2000);
     }
   };
 
@@ -238,7 +242,7 @@
       }
     });
 
-    g.selectAll('.node')
+    g.selectAll('circle')
       .data(nodes)
       .enter()
       .append('circle')
@@ -248,7 +252,8 @@
         .attr('id', function(d, i) { return d.nodeName; })
         .attr('cx', function(d, i) { return d.cx; })
         .attr('cy', function(d, i) { return d.y; })
-        .attr('r', 4);
+        .attr('r', 4)
+        .attr('id', function(d, i) { return d.nodeName + '-circle' });
 
     g.selectAll('text')
       .data(nodes)
@@ -286,9 +291,30 @@
             return 'writer';
           }
         })
+        .attr('id', function(d) { return d.nodeName + '-text' })
       .on('click', function(d) {
         redraw(d);
-      });
+      })
+      // .on('mouseover', function(d, i) {
+      //   var current = this;
+      //   var currentIndex = i;
+      //   g.selectAll('text').transition().style('opacity', function() {
+      //     return (this === current) ? 1 : 0.2;
+      //   });
+
+      //   g.selectAll('path').transition().style('opacity', function(d, i) {
+      //     return (i === currentIndex) ? 1 : 0.2;
+      //   });
+
+      //   g.selectAll('circle').transition().style('opacity', function(d, i) {
+      //     return (i === currentIndex) ? 1 : 0.2;
+      //   });
+      // })
+      // .on('mouseleave', function(d) {
+      //   d3.selectAll('text').transition().style('opacity', 1);
+      //   d3.selectAll('path').transition().style('opacity', 1);
+      //   d3.selectAll('circle').transition().style('opacity', 1);
+      // });
 
     g.selectAll('line')
       .data([centerNode])
@@ -325,6 +351,7 @@
         .style('stroke', function(d, i) {
           return colors(i);
         })
+        .attr('id', function(d) { return d.nodeName + '-path'; })
         .attr('d', function(d) {
           return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
         })

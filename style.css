@@ -31,7 +31,7 @@ text {
 
 line {
   stroke-width: 1px;
-  stroke-dasharray: 5, 5;
+  stroke-dasharray: 2, 2;
 }
 
 .highlight {
