@@ -19,7 +19,7 @@ h2 {
   margin: 2em auto 0;
 }
 
-svg {
+svg, g {
   display: block;
   margin: 0 auto;
 }
