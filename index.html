@@ -39,114 +39,226 @@
     svg.selectAll('path').attr('opacity', 1);
   };
 
-  var pynchonMadeOnce = false;
+  var createGraph = function(data, g) {
+    var nodes = data.nodes;
+    var links = data.links;
 
-  var redraw = function(writer) {
-    var data = writers[writer];
+    var xScale = d3.scale.linear()
+      .domain([0, nodes.length])
+      .range([0, height]);
+
+    // Draw nodes
+    nodes.forEach(function(d, i) {
+      d.x = Math.round(xScale(i)) + (width / 2);
+      d.y = 300;
+      d.cx = d.x + (i * 8);
+    });
+
+    g.selectAll('circle')
+      .data(nodes)
+      .enter()
+      .append('circle')
+        .attr('fill', function(d, i) {
+          return colors(i);
+        })
+        .attr('cx', function(d, i) { return d.cx; })
+        .attr('cy', function(d, i) { return d.y; })
+        .attr('r', 4);
+
+    g.selectAll('text')
+      .data(nodes)
+      .enter()
+      .append('text')
+        .text(function(d, i) {
+          return d.nodeName;
+        })
+        .attr('class', 'writer')
+        .attr('style', function(d, i) {
+          return "fill: " + colors(i) + ";";
+        })
+        .attr('x', function(d, i) { return d.cx; })
+        .attr('y', function(d, i) { 
+          if (d.group === 1) {
+            return d.y + 20;
+          } else {
+            return d.y - 20; 
+          }
+        })
+        .attr('transform', function(d, i) {
+          if (d.group === 1) {
+            return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
+          } else {
+            return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
+          }
+        });
+
+    // Draw arcs
+    links.forEach(function(d, i) {
+      d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
+      d.y = nodes[d.source].y - nodes[d.target].y,
+      d.r = Math.sqrt(d.x * d.x + d.y * d.y)
+    });
+
+    g.selectAll('path')
+      .data(links)
+      .enter()
+      .append('path')
+        .style('fill', 'transparent')
+        .style('stroke', function(d, i) {
+          return colors(i);
+        })
+        .attr('d', function(d) {
+          return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
+        })
+        .attr('transform', 'translate(0, 200)'); 
+
+    g.on('mouseleave', function(d) {
+      g.remove();
+      unfadeGraph();
+    });
+  }
+
+  var redraw = function(obj) {
+    var data = writers[obj.nodeName];
 
     if (data !== undefined) {
-      if ((writer === 'Thomas Pynchon' && !pynchonMadeOnce) || writer !== 'Thomas Pynchon') {
-        pynchonMadeOnce = true;
-
-        fadeGraph();
-        var nodes = data.nodes;
-        var links = data.links;
-        var g = svg.append('g');
-
-        var xScale = d3.scale.linear()
-          .domain([0, nodes.length])
-          .range([0, height]);
-
-        // Draw nodes
-        nodes.forEach(function(d, i) {
-          d.x = Math.round(xScale(i)) + 50;
-          d.y = 300;
-          d.cx = d.x + (i * 8);
+      fadeGraph();
+      var g = svg.append('g').attr('width', width);
+      g.selectAll('circle')
+        .data([obj])
+        .enter()
+        .append('circle')
+          .attr('fill', function(d) {
+            return d.color;
+          })
+          .attr('cx', function(d) { return d.cx; })
+          .attr('cy', function(d) { return d.y; })
+          .attr('r', 4)
+        .transition()
+        .delay(1500)
+        .attr('transform', function(d) {
+          return 'translate(' + (width / 2 - d.cx) + ', 0)';
         });
 
-        g.selectAll('.node')
-          .data(nodes)
-          .enter()
-          .append('circle')
-            .attr('fill', function(d, i) {
-              return colors(i);
-            })
-            .attr('id', function(d, i) { return d.nodeName; })
-            .attr('cx', function(d, i) { return d.cx; })
-            .attr('cy', function(d, i) { return d.y; })
-            .attr('r', 4);
-
-        g.selectAll('text')
-          .data(nodes)
-          .enter()
-          .append('text')
-            .text(function(d, i) {
-              return d.nodeName;
-            })
-            .attr('class', 'writer')
-            .attr('style', function(d, i) {
-              return "fill: " + colors(i) + ";";
-            })
-            .attr('x', function(d, i) { return d.cx; })
-            .attr('y', function(d, i) { 
-              if (d.group === 1) {
-                return d.y + 20;
-              } else {
-                return d.y - 20; 
-              }
-            })
-            .attr('transform', function(d, i) {
-              if (d.group === 1) {
-                return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
-              } else {
-                return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
-              }
-            });
-
-        // Draw arcs
-        links.forEach(function(d, i) {
-          d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
-          d.y = nodes[d.source].y - nodes[d.target].y,
-          d.r = Math.sqrt(d.x * d.x + d.y * d.y)
-        });
-
-        g.selectAll('path')
-          .data(links)
-          .enter()
-          .append('path')
-            .style('fill', 'transparent')
-            .style('stroke', function(d, i) {
-              return colors(i);
-            })
-            .attr('d', function(d) {
-              return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
-            })
-            .attr('transform', 'translate(0, 200)')
+      g.selectAll('text')
+        .data([obj])
+        .enter()
+        .append('text')
+          .text(function(d, i) {
+            return d.nodeName;
+          })
+          .attr('style', function(d, i) {
+            return "fill: " + d.color + ";";
+          })
+          .attr('x', function(d, i) { return d.cx; })
+          .attr('y', function(d, i) { 
+            if (d.group === 1) {
+              return d.y + 20;
+            } else {
+              return d.y - 20; 
+            }
+          })
+          .attr('transform', function(d) {
+            if (d.group === 1) {
+              return 'rotate(270 ' + (d.cx) + ',' + (d.y + 20) + ')'
+            } else {
+              return 'rotate(-270 ' + (d.cx) + ',' + (d.y - 20) + ')'
+            }
+          })
           .transition()
-            .duration(500)
-            .delay(function(d, i) {
-              return i / nodes.length * 200;
-            })
-          ; 
-
-        if (writer === 'Thomas Pynchon') {
-          g.selectAll('text')
-            .on('click', function(d) {
-              redraw(d.nodeName);
-            });
-        } else {
-          g.on('mouseleave', function(d) {
-            g.remove();
-            unfadeGraph();
+          .delay(1500)
+          .attr('transform', function(d) {
+            return 'translate(' + (width / 2 - d.cx) + ', 0)';
           });
-          
-        }
-      }
+
+      setTimeout(function() {
+        createGraph(data, g);
+      }, 2500);
     }
   };
 
+  var draw = function() {
+    var data = writers['Thomas Pynchon'];
+    var nodes = data.nodes;
+    var links = data.links;
+    var g = svg.append('g').attr('width', width);
 
-  redraw('Thomas Pynchon');
+    var xScale = d3.scale.linear()
+      .domain([0, nodes.length])
+      .range([0, height]);
+
+    // Draw nodes
+    nodes.forEach(function(d, i) {
+      d.x = Math.round(xScale(i)) + 50;
+      d.y = 300;
+      d.cx = d.x + (i * 8);
+      d.color = colors(i);
+    });
+
+    g.selectAll('.node')
+      .data(nodes)
+      .enter()
+      .append('circle')
+        .attr('fill', function(d, i) {
+          return d.color;
+        })
+        .attr('id', function(d, i) { return d.nodeName; })
+        .attr('cx', function(d, i) { return d.cx; })
+        .attr('cy', function(d, i) { return d.y; })
+        .attr('r', 4);
+
+    g.selectAll('text')
+      .data(nodes)
+      .enter()
+      .append('text')
+        .text(function(d, i) {
+          return d.nodeName;
+        })
+        .attr('class', 'writer')
+        .attr('style', function(d, i) {
+          return "fill: " + d.color + ";";
+        })
+        .attr('x', function(d, i) { return d.cx; })
+        .attr('y', function(d, i) { 
+          if (d.group === 1) {
+            return d.y + 20;
+          } else {
+            return d.y - 20; 
+          }
+        })
+        .attr('transform', function(d) {
+          if (d.group === 1) {
+            return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
+          } else {
+            return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
+          }
+        })
+      .on('click', function(d) {
+        redraw(d);
+      });
+
+    // Draw arcs
+    links.forEach(function(d, i) {
+      d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
+      d.y = nodes[d.source].y - nodes[d.target].y,
+      d.r = Math.sqrt(d.x * d.x + d.y * d.y)
+    });
+
+    g.selectAll('path')
+      .data(links)
+      .enter()
+      .append('path')
+        .style('fill', 'transparent')
+        .style('stroke', function(d, i) {
+          return colors(i);
+        })
+        .attr('d', function(d) {
+          return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
+        })
+        .attr('transform', 'translate(0, 200)'); 
+  };
+
+  draw();
 
 
 
