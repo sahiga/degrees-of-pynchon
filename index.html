@@ -39,83 +39,108 @@
     svg.selectAll('path').attr('opacity', 1);
   };
 
-  var createGraph = function(data, g) {
+  var createGraph = function(data, g, centerColor) {
     var nodes = data.nodes;
     var links = data.links;
 
-    var xScale = d3.scale.linear()
-      .domain([0, nodes.length])
-      .range([0, height]);
+    if (nodes.length > 0) {
+      var xScale = d3.scale.linear()
+        .domain([0, nodes.length])
+        .range([0, height]);
 
-    // Draw nodes
-    nodes.forEach(function(d, i) {
-      d.x = Math.round(xScale(i)) + (width / 2);
-      d.y = 300;
-      d.cx = d.x + (i * 8);
-    });
+      var centerPos = width / 2;
 
-    g.selectAll('circle')
-      .data(nodes)
-      .enter()
-      .append('circle')
-        .attr('fill', function(d, i) {
-          return colors(i);
-        })
-        .attr('cx', function(d, i) { return d.cx; })
-        .attr('cy', function(d, i) { return d.y; })
-        .attr('r', 4);
+      // Draw nodes
+      nodes.forEach(function(d, i) {
+        if (d.group === 0) {
+          d.x = centerPos;
+          d.cx = centerPos;
+        } else if (d.group === 1) {
+          d.x = -Math.round(xScale(i)) + (centerPos);
+          d.cx = d.x + (i * 8);
+        } else if (d.group === 2) {      
+          d.x = Math.round(xScale(i)) + (centerPos);
+          d.cx = d.x + (i * 8);
+        }
+        d.y = 300;
+      });
 
-    g.selectAll('text')
-      .data(nodes)
-      .enter()
-      .append('text')
-        .text(function(d, i) {
-          return d.nodeName;
-        })
-        .attr('class', 'writer')
-        .attr('style', function(d, i) {
-          return "fill: " + colors(i) + ";";
-        })
-        .attr('x', function(d, i) { return d.cx; })
-        .attr('y', function(d, i) { 
-          if (d.group === 1) {
-            return d.y + 20;
-          } else {
-            return d.y - 20; 
-          }
-        })
-        .attr('transform', function(d, i) {
-          if (d.group === 1) {
-            return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
-          } else {
-            return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
-          }
-        });
+      g.selectAll('circle')
+        .data(nodes)
+        .enter()
+        .append('circle')
+          .attr('fill', function(d, i) {
+            if (d.group === 0) {
+              return centerColor;
+            } else {
+              return colors(i); 
+            }
+          })
+          .attr('cx', function(d, i) { return d.cx; })
+          .attr('cy', function(d, i) { return d.y; })
+          .attr('r', 4);
 
-    // Draw arcs
-    links.forEach(function(d, i) {
-      d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
-      d.y = nodes[d.source].y - nodes[d.target].y,
-      d.r = Math.sqrt(d.x * d.x + d.y * d.y)
-    });
+      g.selectAll('text')
+        .data(nodes)
+        .enter()
+        .append('text')
+          .text(function(d, i) {
+            if (d.group !== 0) {
+              return d.nodeName;
+            }
+          })
+          .attr('class', 'writer')
+          .attr('style', function(d, i) {
+            return "fill: " + colors(i) + ";";
+          })
+          .attr('x', function(d, i) { return d.cx; })
+          .attr('y', function(d, i) { 
+            if (d.group === 1) {
+              return d.y + 20;
+            } else {
+              return d.y - 20; 
+            }
+          })
+          .attr('transform', function(d, i) {
+            if (d.group === 1) {
+              return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
+            } else {
+              return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
+            }
+          });
 
-    g.selectAll('path')
-      .data(links)
-      .enter()
-      .append('path')
-        .style('fill', 'transparent')
-        .style('stroke', function(d, i) {
-          return colors(i);
-        })
-        .attr('d', function(d) {
-          return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
-        })
-        .attr('transform', 'translate(0, 200)'); 
+      // Draw arcs
+      links.forEach(function(d, i) {
+        if (nodes[d.source].group === 1) {
+          d.x = (nodes[d.source].x + centerPos) * 1.2;
+        } else if (nodes[d.source].group === 2) {
+          d.x = (nodes[d.source].x - centerPos) * 1.2;
+        }
+        d.y = nodes[d.source].y - 300;
+        d.r = Math.sqrt(d.x * d.x + d.y * d.y);
+      });
 
-    g.on('mouseleave', function(d) {
-      g.remove();
-      unfadeGraph();
-    });
+      g.selectAll('path')
+        .data(links)
+        .enter()
+        .append('path')
+          .style('fill', 'transparent')
+          .style('stroke', function(d, i) {
+            return colors(i);
+          })
+          .attr('d', function(d) {
+            return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
+            // return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + ((width / 2) - centerNode.cx) + ', ' + 100;
+            //return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + centerNode.cx + ', ' + 100;
+
+          })
+          .attr('transform', 'translate(0, 200)'); 
+
+      g.on('mouseleave', function(d) {
+        g.remove();
+        unfadeGraph();
+      });
+    }
   }
 
   var redraw = function(obj) {
@@ -124,12 +149,41 @@
     if (data !== undefined) {
       fadeGraph();
       var g = svg.append('g').attr('width', width);
+      var centerNode;
+
+      // var leftHalf = {'nodes': [], 'links': []};
+      // var rightHalf = {'nodes': [], 'links': []};
+      // // var leftStartingPoint;
+      // // var rightStartingPoint;
+
+      // var nodes = data.nodes;
+      // var links = data.links;
+
+      // for (var i = 0; i < nodes.length; i++) {
+      //   if (nodes[i].group === 1) {
+      //     // if (leftStartingPoint === undefined) {
+      //     //   leftStartingPoint = i;
+      //     // }
+      //     leftHalf.nodes.push(nodes[i]);
+      //     leftHalf.links.push(links[i]);
+      //   } else if (nodes[i].group === 2) {
+      //     // if (rightStartingPoint === undefined) {
+      //     //   rightStartingPoint = i;
+      //     // }
+      //     rightHalf.nodes.push(nodes[i]);
+      //     rightHalf.links.push(links[i]);
+      //   }
+      // }
+
+      var centerColor;
+
       g.selectAll('circle')
         .data([obj])
         .enter()
         .append('circle')
           .attr('fill', function(d) {
-            return d.color;
+            centerColor = d.color;
+            return centerColor;
           })
           .attr('cx', function(d) { return d.cx; })
           .attr('cy', function(d) { return d.y; })
@@ -172,7 +226,7 @@
           });
 
       setTimeout(function() {
-        createGraph(data, g);
+        createGraph(data, g, centerColor);
       }, 2500);
     }
   };
