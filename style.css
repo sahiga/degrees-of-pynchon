@@ -28,3 +28,15 @@ text {
   font-weight: 400;
   cursor: pointer;
 }
+
+line {
+  stroke-width: 1px;
+  stroke-dasharray: 5, 5;
+}
+
+.highlight {
+  display: block;
+  font-size: 2em;
+  font-weight: 700;
+  text-transform: uppercase;
+}

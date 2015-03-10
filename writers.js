@@ -231,6 +231,7 @@ var writers = {
       {'source': 0, 'target': 3},
       {'source': 1, 'target': 3},
       {'source': 2, 'target': 3},
+      {'source': 4, 'target': 3},
       {'source': 5, 'target': 3},
       {'source': 6, 'target': 3},
       {'source': 7, 'target': 3},
