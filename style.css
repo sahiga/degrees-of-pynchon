@@ -26,4 +26,5 @@ svg {
 
 text {
   font-weight: 400;
+  cursor: pointer;
 }

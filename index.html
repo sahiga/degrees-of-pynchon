@@ -11,13 +11,13 @@
   <h2>"Thomas Pynchon loved this graph, almost as much as he loves cameras!"</h2>
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="pynchon.js"></script>
+<script src="writers.js"></script>
 <script>
-  var data = pynchon;
-  var nodes = data.nodes;
-  var links = data.links;
+  // var data = writers['Thomas Pynchon'];
+  // var nodes = data.nodes;
+  // var links = data.links;
   var width = 1200,
-      height = 600,
+      height = 550,
       margin = { top: 30, right: 40, bottom: 50, left: 50 };
 
   var colors = d3.scale.category20();
@@ -26,79 +26,119 @@
     .attr('width', width + margin.right + margin.left)
     .attr('height', height + margin.top + margin.bottom);
 
-  var xScale = d3.scale.linear()
-    .domain([0, nodes.length])
-    .range([0, height]);
 
+  var fadeGraph = function() {
+    svg.selectAll('circle').attr('opacity', 0.08);
+    svg.selectAll('text').attr('opacity', 0.08);
+    svg.selectAll('path').attr('opacity', 0.08);
+  };
 
-  // Draw nodes
-  nodes.forEach(function(d, i) {
-    d.x = Math.round(xScale(i)) + 50;
-    d.y = 400;
-    d.cx = d.x + (i * 8)
-  });
+  var unfadeGraph = function() {
+    svg.selectAll('circle').attr('opacity', 1);
+    svg.selectAll('text').attr('opacity', 1);
+    svg.selectAll('path').attr('opacity', 1);
+  };
 
-  svg.selectAll('.node')
-    .data(nodes)
-    .enter()
-    .append('circle')
-      .attr('fill', function(d, i) {
-        return colors(i);
-      })
-      .attr('id', function(d, i) { return d.nodeName; })
-      // .attr('cx', function(d, i) { return d.x + (i * 10); })
-      .attr('cx', function(d, i) { return d.cx; })
-      .attr('cy', function(d, i) { return d.y; })
-      .attr('r', 4)
+  var redraw = function(writer) {
+    var data = writers[writer];
 
-  svg.selectAll('text')
-    .data(nodes)
-    .enter()
-    .append('text')
-      .text(function(d, i) {
-        if (d.group !== 0) {
-          return d.nodeName;
-        }
-      })
-      .attr('style', function(d, i) {
-        return "fill: " + colors(i) + ";";
-      })
-      .attr('x', function(d, i) { return d.cx; })
-      .attr('y', function(d, i) { 
-        if (d.group === 1) {
-          return d.y + 20;
-        } else {
-          return d.y - 20; 
-        }
-      })
-      .attr('transform', function(d, i) {
-        if (d.group === 1) {
-          return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
-        } else {
-          return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
-        }
+    if (data !== undefined) {
+      fadeGraph();
+      var nodes = data.nodes;
+      var links = data.links;
+      var g = svg.append('g');
+
+      var xScale = d3.scale.linear()
+        .domain([0, nodes.length])
+        .range([0, height]);
+
+      // Draw nodes
+      nodes.forEach(function(d, i) {
+        d.x = Math.round(xScale(i)) + 50;
+        d.y = 300;
+        d.cx = d.x + (i * 8)
       });
 
+      g.selectAll('.node')
+        .data(nodes)
+        .enter()
+        .append('circle')
+          .attr('fill', function(d, i) {
+            return colors(i);
+          })
+          .attr('id', function(d, i) { return d.nodeName; })
+          .attr('cx', function(d, i) { return d.cx; })
+          .attr('cy', function(d, i) { return d.y; })
+          .attr('r', 4);
 
-  // Draw arcs
-  links.forEach(function(d, i) {
-    d.x = (nodes[d.source].x - nodes[d.target].x) * .5, 
-    d.y = nodes[d.source].y - nodes[d.target].y,
-    d.r = Math.sqrt(d.x * d.x + d.y * d.y)
-  });
+      g.selectAll('text')
+        .data(nodes)
+        .enter()
+        .append('text')
+          .text(function(d, i) {
+            return d.nodeName;
+          })
+          .attr('class', 'writer')
+          .attr('style', function(d, i) {
+            return "fill: " + colors(i) + ";";
+          })
+          .attr('x', function(d, i) { return d.cx; })
+          .attr('y', function(d, i) { 
+            if (d.group === 1) {
+              return d.y + 20;
+            } else {
+              return d.y - 20; 
+            }
+          })
+          .attr('transform', function(d, i) {
+            if (d.group === 1) {
+              return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
+            } else {
+              return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
+            }
+          })
+        .on('mouseover', function(d) {
+          redraw(d.nodeName);
+        });
 
-  svg.selectAll('path')
-    .data(links)
-    .enter()
-    .append('path')
-    .style('fill', 'transparent')
-    .style('stroke', function(d, i) {
-      return colors(i);
-    })
-    .attr('d', function(d) {
-      return 'M ' + nodes[d.source].cx + ', ' + 200 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 200;
-    })
-    .attr('transform', 'translate(0, 200)');
+      // Draw arcs
+      links.forEach(function(d, i) {
+        d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
+        d.y = nodes[d.source].y - nodes[d.target].y,
+        d.r = Math.sqrt(d.x * d.x + d.y * d.y)
+      });
+
+      g.selectAll('path')
+        .data(links)
+        .enter()
+        .append('path')
+          .style('fill', 'transparent')
+          .style('stroke', function(d, i) {
+            return colors(i);
+          })
+          .attr('d', function(d) {
+            return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
+          })
+          .attr('transform', 'translate(0, 200)')
+        .transition()
+          .duration(500)
+          .delay(function(d, i) {
+            return i / nodes.length * 200;
+          })
+        ; 
+
+      if (writer !== 'Thomas Pynchon') {
+        g.on('mouseleave', function(d) {
+          g.remove();
+          unfadeGraph();
+        });
+      }
+    }
+  };
+
+
+  redraw('Thomas Pynchon');
+
 
 
 </script>
