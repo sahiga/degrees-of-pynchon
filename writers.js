@@ -252,7 +252,8 @@ var writers = {
       {'nodeName': 'Miguel de Cervantes', 'group': 1},
       {'nodeName': 'Jorge Luis Borges', 'group': 0},
       {'nodeName': 'Thomas Pynchon', 'group': 2},
-      {'nodeName': 'Umberto Eco', 'group': 2}
+      {'nodeName': 'Umberto Eco', 'group': 2},
+      {'nodeName': 'Salman Rushdie', 'group': 2}
     ],
 
     'links': [
@@ -261,7 +262,8 @@ var writers = {
       {'source': 2, 'target': 4},
       {'source': 3, 'target': 4},
       {'source': 5, 'target': 4},
-      {'source': 6, 'target': 4}
+      {'source': 6, 'target': 4},
+      {'source': 7, 'target': 4},
     ]
   },
 
@@ -489,7 +491,9 @@ var writers = {
       {'nodeName': 'David Lodge', 'group': 2},
       {'nodeName': 'Joseph Campbell', 'group': 2},
       {'nodeName': 'Jack Kerouac', 'group': 2},
-      {'nodeName': 'Thomas Pynchon', 'group': 2}
+      {'nodeName': 'Thomas Pynchon', 'group': 2},
+      {'nodeName': 'Salman Rushdie', 'group': 2},
+      {'nodeName': 'Don DeLillo', 'group': 2}
     ],
 
     'links': [
@@ -507,7 +511,9 @@ var writers = {
       {'source': 12, 'target': 4},
       {'source': 13, 'target': 4},
       {'source': 14, 'target': 4},
-      {'source': 15, 'target': 4}
+      {'source': 15, 'target': 4},
+      {'source': 16, 'target': 4},
+      {'source': 17, 'target': 4}
     ]
   },
 
@@ -540,18 +546,20 @@ var writers = {
       {'nodeName': 'Gary Snyder', 'group': 1},
       {'nodeName': 'Neal Cassady', 'group': 1},
       {'nodeName': 'James Joyce', 'group': 1},
+      {'nodeName': 'Henry Miller', 'group': 1},
       {'nodeName': 'Jack Kerouac', 'group': 0},
       {'nodeName': 'Allen Ginsberg', 'group': 2},
       {'nodeName': 'Thomas Pynchon', 'group': 2}
     ],
 
     'links': [
-      {'source': 0, 'target': 4},
-      {'source': 1, 'target': 4},
-      {'source': 2, 'target': 4},
-      {'source': 3, 'target': 4},
-      {'source': 5, 'target': 4},
-      {'source': 6, 'target': 4}
+      {'source': 0, 'target': 5},
+      {'source': 1, 'target': 5},
+      {'source': 2, 'target': 5},
+      {'source': 3, 'target': 5},
+      {'source': 5, 'target': 5},
+      {'source': 6, 'target': 5},
+      {'source': 7, 'target': 5}
     ]
   },
 
@@ -599,6 +607,128 @@ var writers = {
       {'source': 17, 'target': 6},
       {'source': 18, 'target': 6},
       {'source': 19, 'target': 6}
+    ]
+  },
+
+  'Henry Miller': {
+    'nodes': [
+      {'nodeName': 'Fyodor Dostoevsky', 'group': 1},
+      {'nodeName': 'Joris-Karl Huysmans', 'group': 1},
+      {'nodeName': 'Honoré de Balzac', 'group': 1},
+      {'nodeName': 'Friedrich Nietzsche', 'group': 1},
+      {'nodeName': 'Henry Miller', 'group': 0},
+      {'nodeName': 'Jack Kerouac', 'group': 2},
+      {'nodeName': 'Norman Mailer', 'group': 2},
+      {'nodeName': 'Cormac McCarthy', 'group': 2},
+      {'nodeName': 'Thomas Pynchon', 'group': 2},
+      {'nodeName': 'Paul Theroux', 'group': 2},
+      {'nodeName': 'Erica Jong', 'group': 2},
+      {'nodeName': 'Junot Díaz', 'group': 2}
+    ],
+
+    'links': [
+      {'source': 0, 'target': 4},
+      {'source': 1, 'target': 4},
+      {'source': 2, 'target': 4},
+      {'source': 3, 'target': 4},
+      {'source': 5, 'target': 4},
+      {'source': 6, 'target': 4},
+      {'source': 7, 'target': 4},
+      {'source': 8, 'target': 4},
+      {'source': 9, 'target': 4},
+      {'source': 10, 'target': 4},
+      {'source': 11, 'target': 4},
+    ]
+  },
+
+  'David Foster Wallace': {
+    'nodes': [
+      {'nodeName': 'David Foster Wallace', 'group': 0},
+      {'nodeName': 'Thomas Pynchon', 'group': 1},
+      {'nodeName': 'Dave Eggers', 'group': 2},
+      {'nodeName': 'Zadie Smith', 'group': 2},
+      {'nodeName': 'Jonathan Franzen', 'group': 2},
+      {'nodeName': 'Elizabeth Wurtzel', 'group': 2},
+      {'nodeName': 'George Saunders', 'group': 2},
+      {'nodeName': 'Rivka Galchen', 'group': 2},
+      {'nodeName': 'Matthew Gallaway', 'group': 2},
+      {'nodeName': 'David Gordon', 'group': 2},
+      {'nodeName': 'Darin Strauss', 'group': 2},
+      {'nodeName': 'Charles Yu', 'group': 2},
+      {'nodeName': 'Deb Olin Unferth', 'group': 2}
+    ],
+
+    'links': [
+      {'source': 1, 'target': 0},
+      {'source': 2, 'target': 0},
+      {'source': 3, 'target': 0},
+      {'source': 4, 'target': 0},
+      {'source': 5, 'target': 0},
+      {'source': 6, 'target': 0},
+      {'source': 7, 'target': 0},
+      {'source': 8, 'target': 0},
+      {'source': 9, 'target': 0},
+      {'source': 10, 'target': 0},
+      {'source': 11, 'target': 0},
+      {'source': 12, 'target': 0}
+    ]
+  },
+  
+  'Don DeLillo': {
+    'nodes': [
+      {'nodeName': 'James Joyce', 'group': 1},
+      {'nodeName': 'William Faulkner', 'group': 1},
+      {'nodeName': 'Flannery O\'Connor', 'group': 1},
+      {'nodeName': 'Ernest Hemingway', 'group': 1},
+      {'nodeName': 'Thomas Pynchon', 'group': 1},
+      {'nodeName': 'Don DeLillo', 'group': 0},
+      {'nodeName': 'David Foster Wallace', 'group': 2},
+      {'nodeName': 'Jonathan Lethem', 'group': 2},
+      {'nodeName': 'Jonathan Franzen', 'group': 2},
+      {'nodeName': 'Dave Eggers', 'group': 2},
+      {'nodeName': 'Martin Amis', 'group': 2},
+      {'nodeName': 'Zadie Smith', 'group': 2},
+      {'nodeName': 'Richard Powers', 'group': 2}
+    ],
+
+    'links': [
+      {'source': 0, 'target': 5},
+      {'source': 1, 'target': 5},
+      {'source': 2, 'target': 5},
+      {'source': 3, 'target': 5},
+      {'source': 4, 'target': 5},
+      {'source': 6, 'target': 5},
+      {'source': 7, 'target': 5},
+      {'source': 8, 'target': 5},
+      {'source': 9, 'target': 5},
+      {'source': 10, 'target': 5},
+      {'source': 11, 'target': 5},
+      {'source': 12, 'target': 5}
+    ]
+  },
+
+  'Salman Rushdie': {
+    'nodes': [
+      {'nodeName': 'Italo Calvino', 'group': 1},
+      {'nodeName': 'Thomas Pynchon', 'group': 1},
+      {'nodeName': 'Jorge Luis Borges', 'group': 1},
+      {'nodeName': 'Mikhail Bulgakov', 'group': 1},
+      {'nodeName': 'Lewis Carroll', 'group': 1},
+      {'nodeName': 'Günter Grass', 'group': 1},
+      {'nodeName': 'James Joyce', 'group': 1},
+      {'nodeName': 'Angela Carter', 'group': 1},
+      {'nodeName': 'Salman Rushdie', 'group': 0}
+    ],
+
+    'links': [
+      {'source': 0, 'target': 8},
+      {'source': 1, 'target': 8},
+      {'source': 2, 'target': 8},
+      {'source': 3, 'target': 8},
+      {'source': 4, 'target': 8},
+      {'source': 5, 'target': 8},
+      {'source': 6, 'target': 8},
+      {'source': 7, 'target': 8}
     ]
 
   }
