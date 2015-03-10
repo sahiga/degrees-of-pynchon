@@ -42,7 +42,7 @@ var pynchon = {
     {'nodeName': 'Graham Greene', group: 1},
     {'nodeName': 'Helen Waddell', group: 1},
     {'nodeName': 'Norbert Wiener', group: 1},
-    {'nodeName': 'Thomas Pynchon', group: 1},
+    {'nodeName': 'Thomas Pynchon', group: 0},
     {'nodeName': 'David Foster Wallace', group: 2},
     {'nodeName': 'William Vollmann', group: 2},
     {'nodeName': 'Richard Powers', group: 2},

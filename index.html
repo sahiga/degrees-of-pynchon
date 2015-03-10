@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Degrees of Thomas Pynchon</title>
+  <title>Degrees of Pynchon</title>
   <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" src="style.css">
+  <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body>
-  <h1>"Thomas Pynchon loved this graph, almost as much as he loves cameras!"</h1>
+  <h1>Degrees of Pynchon</h1>
+  <h2>"Thomas Pynchon loved this graph, almost as much as he loves cameras!"</h2>
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="pynchon.js"></script>
 <script>
-  var pynchyDot = 42;
   var data = pynchon;
   var nodes = data.nodes;
   var links = data.links;
@@ -56,18 +56,23 @@
     .enter()
     .append('text')
       .text(function(d, i) {
-        return d.nodeName;
+        if (d.group !== 0) {
+          return d.nodeName;
+        }
+      })
+      .attr('style', function(d, i) {
+        return "fill: " + colors(i) + ";";
       })
       .attr('x', function(d, i) { return d.cx; })
       .attr('y', function(d, i) { 
-        if (i < pynchyDot) {
+        if (d.group === 1) {
           return d.y + 20;
         } else {
           return d.y - 20; 
         }
       })
       .attr('transform', function(d, i) {
-        if (i < pynchyDot) {
+        if (d.group === 1) {
           return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
         } else {
           return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
