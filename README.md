@@ -1,6 +1,6 @@
 # Degrees of Pynchon
  
-## A graph of literary infuences, stemming from the great postmodern novelist Thomas Pynchon.
+## A graph of literary influences, stemming from the great postmodern novelist Thomas Pynchon.
 
 ## Summary
 

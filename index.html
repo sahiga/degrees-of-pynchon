@@ -207,6 +207,7 @@
     var nodes = data.nodes;
     var links = data.links;
     var pynchonGraph = svg.append('g').attr('width', width);
+    var fadeMs = 150;
 
     var xScale = d3.scale.linear()
       .domain([0, nodes.length])
@@ -235,8 +236,7 @@
         .attr('id', function(d, i) { return d.nodeName; })
         .attr('cx', function(d, i) { return d.cx; })
         .attr('cy', function(d, i) { return d.y; })
-        .attr('r', 4)
-        .attr('id', function(d, i) { return d.nodeName + '-circle' });
+        .attr('r', 4);
 
     pynchonGraph.selectAll('text')
       .data(nodes)
@@ -274,32 +274,38 @@
             return 'writer';
           }
         })
-        .attr('id', function(d) { return d.nodeName + '-text' })
       .on('mouseenter', function(d, i) {
         if (!multipleGraphsOnPage) {
           var current = this;
           var currentIndex = i;
-          pynchonGraph.selectAll('text').transition().delay(0).duration(500).style('opacity', function() {
-            return (this === current) ? 1 : 0.06;
-          });
 
-          pynchonGraph.selectAll('path').transition().delay(0).duration(500).style('opacity', function(d, i) {
-            return (i === currentIndex) ? 1 : 0.06;
-          });
+          if (currentIndex !== 41) {
+            pynchonGraph.selectAll('text').transition().delay(0).duration(fadeMs).style('opacity', function() {
+              return (this === current) ? 1 : 0.06;
+            });
 
-          pynchonGraph.selectAll('circle').transition().delay(0).duration(500).style('opacity', function(d, i) {
-            return (i === currentIndex) ? 1 : 0.06;
-          });
+            pynchonGraph.selectAll('path').transition().delay(0).duration(fadeMs).style('opacity', function(d, i) {
+              if (i < 41) {
+                return (i === currentIndex) ? 1 : 0.06;
+              } else {
+                return (i === currentIndex - 1) ? 1 : 0.06;
+              }
+            });
 
-          pynchonGraph.select('line').transition().delay(0).duration(500).style('opacity', 0.06);
+            pynchonGraph.selectAll('circle').transition().delay(0).duration(fadeMs).style('opacity', function(d, i) {
+              return (i === currentIndex) ? 1 : 0.06;
+            });
+
+            pynchonGraph.select('line').transition().delay(0).duration(fadeMs).style('opacity', 0.06);
+          }
         }
       })
       .on('mouseleave', function(d) {
         if (!multipleGraphsOnPage) {
-          pynchonGraph.selectAll('text').transition().delay(0).duration(500).style('opacity', 1);
-          pynchonGraph.selectAll('path').transition().delay(0).duration(500).style('opacity', 1);
-          pynchonGraph.selectAll('circle').transition().delay(0).duration(500).style('opacity', 1);
-          pynchonGraph.select('line').transition().delay(0).duration(500).style('opacity', 1);
+          pynchonGraph.selectAll('text').transition().delay(0).duration(fadeMs).style('opacity', 1);
+          pynchonGraph.selectAll('path').transition().delay(0).duration(fadeMs).style('opacity', 1);
+          pynchonGraph.selectAll('circle').transition().delay(0).duration(fadeMs).style('opacity', 1);
+          pynchonGraph.select('line').transition().delay(0).duration(fadeMs).style('opacity', 1);
         }
       })
       .on('click', function(d) {
@@ -344,7 +350,6 @@
         .style('stroke', function(d, i) {
           return colors(i);
         })
-        .attr('id', function(d) { return d.nodeName + '-path'; })
         .attr('d', function(d) {
           return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
         })
