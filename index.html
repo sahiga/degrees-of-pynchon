@@ -23,20 +23,7 @@
     .attr('width', width + margin.right + margin.left)
     .attr('height', height + margin.top + margin.bottom);
 
-
-  var fadeGraph = function() {
-    svg.selectAll('circle').attr('opacity', 0.06);
-    svg.selectAll('text').attr('opacity', 0.06);
-    svg.selectAll('path').attr('opacity', 0.06);
-    svg.selectAll('line').attr('opacity', 0.06);
-  };
-
-  var unfadeGraph = function() {
-    svg.selectAll('circle').attr('opacity', 1);
-    svg.selectAll('text').attr('opacity', 1);
-    svg.selectAll('path').attr('opacity', 1);
-    svg.selectAll('line').attr('opacity', 1);
-  };
+  var multipleGraphsOnPage = false;
 
   var createGraph = function(data, g, centerColor) {
     var nodes = data.nodes;
@@ -131,17 +118,17 @@
 
       g.on('mouseleave', function(d) {
         g.remove();
-        unfadeGraph();
+        multipleGraphsOnPage = false;
       });
     }
   }
 
-  var redraw = function(obj) {
+  var redraw = function(obj, originalGraph) {
     var data = writers[obj.nodeName];
     var ms = 800;
 
     if (data !== undefined) {
-      fadeGraph();
+      multipleGraphsOnPage = true;
       var g = svg.append('g').attr('width', width);
       var centerColor;
 
@@ -168,7 +155,7 @@
         .enter()
         .append('line')
           .transition()
-          .delay(0)
+          .delay(ms)
           .duration(ms)
           .attr('style', function(d, i) {
             return 'stroke: ' + d.color;
@@ -190,12 +177,8 @@
         .data([obj])
         .enter()
         .append('text')
-          .text(function(d, i) {
-            return d.nodeName;
-          })
-          .attr('style', function(d, i) {
-            return 'fill: ' + d.color;
-          })
+          .text(obj.nodeName)
+          .attr('style', 'fill: ' + obj.color)
           .attr('y', function(d, i) { 
             if (d.group === 1) {
               return d.y + 20;
@@ -203,19 +186,19 @@
               return d.y - 20; 
             }
           })
-          .attr('x', function(d, i) { return d.cx; })
+          .attr('x', obj.cx)
           .transition()
           .delay(0)
           .duration(ms)
           .attr('transform', function(d) {
             return 'translate(' + (width / 2 - d.cx - 120) + ', 0)';
           })
-          .attr('class', 'highlight')
+          .attr('class', 'highlight writer')
           .attr('y', function(d) { return 100; });
 
       setTimeout(function() {
         createGraph(data, g, centerColor);
-      }, 2000);
+      }, 1500);
     }
   };
 
@@ -223,7 +206,7 @@
     var data = writers['Thomas Pynchon'];
     var nodes = data.nodes;
     var links = data.links;
-    var g = svg.append('g').attr('width', width);
+    var pynchonGraph = svg.append('g').attr('width', width);
 
     var xScale = d3.scale.linear()
       .domain([0, nodes.length])
@@ -242,7 +225,7 @@
       }
     });
 
-    g.selectAll('circle')
+    pynchonGraph.selectAll('circle')
       .data(nodes)
       .enter()
       .append('circle')
@@ -255,7 +238,7 @@
         .attr('r', 4)
         .attr('id', function(d, i) { return d.nodeName + '-circle' });
 
-    g.selectAll('text')
+    pynchonGraph.selectAll('text')
       .data(nodes)
       .enter()
       .append('text')
@@ -292,31 +275,41 @@
           }
         })
         .attr('id', function(d) { return d.nodeName + '-text' })
-      .on('click', function(d) {
-        redraw(d);
+      .on('mouseenter', function(d, i) {
+        if (!multipleGraphsOnPage) {
+          var current = this;
+          var currentIndex = i;
+          pynchonGraph.selectAll('text').transition().delay(0).duration(500).style('opacity', function() {
+            return (this === current) ? 1 : 0.06;
+          });
+
+          pynchonGraph.selectAll('path').transition().delay(0).duration(500).style('opacity', function(d, i) {
+            return (i === currentIndex) ? 1 : 0.06;
+          });
+
+          pynchonGraph.selectAll('circle').transition().delay(0).duration(500).style('opacity', function(d, i) {
+            return (i === currentIndex) ? 1 : 0.06;
+          });
+
+          pynchonGraph.select('line').transition().delay(0).duration(500).style('opacity', 0.06);
+        }
       })
-      // .on('mouseover', function(d, i) {
-      //   var current = this;
-      //   var currentIndex = i;
-      //   g.selectAll('text').transition().style('opacity', function() {
-      //     return (this === current) ? 1 : 0.2;
-      //   });
+      .on('mouseleave', function(d) {
+        if (!multipleGraphsOnPage) {
+          pynchonGraph.selectAll('text').transition().delay(0).duration(500).style('opacity', 1);
+          pynchonGraph.selectAll('path').transition().delay(0).duration(500).style('opacity', 1);
+          pynchonGraph.selectAll('circle').transition().delay(0).duration(500).style('opacity', 1);
+          pynchonGraph.select('line').transition().delay(0).duration(500).style('opacity', 1);
+        }
+      })
+      .on('click', function(d) {
+        pynchonGraph.selectAll('text').transition().style('opacity', 0.06);
+        pynchonGraph.selectAll('circle').transition().style('opacity', 0.06);
+        pynchonGraph.selectAll('path').transition().style('opacity', 0.06);
+        redraw(d);
+      });
 
-      //   g.selectAll('path').transition().style('opacity', function(d, i) {
-      //     return (i === currentIndex) ? 1 : 0.2;
-      //   });
-
-      //   g.selectAll('circle').transition().style('opacity', function(d, i) {
-      //     return (i === currentIndex) ? 1 : 0.2;
-      //   });
-      // })
-      // .on('mouseleave', function(d) {
-      //   d3.selectAll('text').transition().style('opacity', 1);
-      //   d3.selectAll('path').transition().style('opacity', 1);
-      //   d3.selectAll('circle').transition().style('opacity', 1);
-      // });
-
-    g.selectAll('line')
+    pynchonGraph.selectAll('line')
       .data([centerNode])
       .enter()
       .append('line')
@@ -343,7 +336,7 @@
       d.r = Math.sqrt(d.x * d.x + d.y * d.y)
     });
 
-    g.selectAll('path')
+    pynchonGraph.selectAll('path')
       .data(links)
       .enter()
       .append('path')
