@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Degrees of Pynchon</title>
-  <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+  <link href="http://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body>
@@ -59,7 +59,7 @@
             if (d.group === 0) {
               return centerColor;
             } else {
-              return colors(i); 
+              return colors(i);
             }
           })
           .attr('cx', function(d, i) { return d.cx; })
@@ -191,7 +191,8 @@
           .delay(0)
           .duration(ms)
           .attr('transform', function(d) {
-            return 'translate(' + (width / 2 - d.cx - 120) + ', 0)';
+            var textWidth = d3.select(this)[0][0].offsetWidth;
+            return 'translate(' + (width / 2 - d.cx - textWidth) + ', 0)';
           })
           .attr('class', 'highlight writer')
           .attr('y', function(d) { return 100; });
