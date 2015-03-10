@@ -13,9 +13,6 @@
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="writers.js"></script>
 <script>
-  // var data = writers['Thomas Pynchon'];
-  // var nodes = data.nodes;
-  // var links = data.links;
   var width = 1200,
       height = 550,
       margin = { top: 30, right: 40, bottom: 50, left: 50 };
@@ -111,13 +108,9 @@
 
       // Draw arcs
       links.forEach(function(d, i) {
-        if (nodes[d.source].group === 1) {
-          d.x = (nodes[d.source].x + centerPos) * 1.2;
-        } else if (nodes[d.source].group === 2) {
-          d.x = (nodes[d.source].x - centerPos) * 1.2;
-        }
-        d.y = nodes[d.source].y - 300;
-        d.r = Math.sqrt(d.x * d.x + d.y * d.y);
+        d.x = (nodes[d.source].x - nodes[d.target].x) * 1.2, 
+        d.y = nodes[d.source].y - nodes[d.target].y,
+        d.r = Math.sqrt(d.x * d.x + d.y * d.y)
       });
 
       g.selectAll('path')
@@ -130,8 +123,6 @@
           })
           .attr('d', function(d) {
             return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + nodes[d.target].cx + ', ' + 100;
-            // return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + ((width / 2) - centerNode.cx) + ', ' + 100;
-            //return 'M ' + nodes[d.source].cx + ', ' + 100 + ' A ' + d.r + ' ' + d.r + ' 0 0 1' + centerNode.cx + ', ' + 100;
 
           })
           .attr('transform', 'translate(0, 200)'); 
@@ -149,32 +140,6 @@
     if (data !== undefined) {
       fadeGraph();
       var g = svg.append('g').attr('width', width);
-      var centerNode;
-
-      // var leftHalf = {'nodes': [], 'links': []};
-      // var rightHalf = {'nodes': [], 'links': []};
-      // // var leftStartingPoint;
-      // // var rightStartingPoint;
-
-      // var nodes = data.nodes;
-      // var links = data.links;
-
-      // for (var i = 0; i < nodes.length; i++) {
-      //   if (nodes[i].group === 1) {
-      //     // if (leftStartingPoint === undefined) {
-      //     //   leftStartingPoint = i;
-      //     // }
-      //     leftHalf.nodes.push(nodes[i]);
-      //     leftHalf.links.push(links[i]);
-      //   } else if (nodes[i].group === 2) {
-      //     // if (rightStartingPoint === undefined) {
-      //     //   rightStartingPoint = i;
-      //     // }
-      //     rightHalf.nodes.push(nodes[i]);
-      //     rightHalf.links.push(links[i]);
-      //   }
-      // }
-
       var centerColor;
 
       g.selectAll('circle')
@@ -194,6 +159,28 @@
           return 'translate(' + (width / 2 - d.cx) + ', 0)';
         });
 
+      g.selectAll('line')
+        .data([obj])
+        .enter()
+        .append('line')
+          .transition()
+          .delay(1500)
+          .attr('style', function(d, i) {
+            return 'stroke: ' + d.color;
+          })
+          .attr('x1', function(d) {
+            return width / 2;
+          })
+          .attr('y1', function(d) {
+            return 110;
+          })
+          .attr('x2', function(d) {
+            return width / 2;
+          })
+          .attr('y2', function(d) {
+            return d.y - 10;
+          });
+
       g.selectAll('text')
         .data([obj])
         .enter()
@@ -202,9 +189,8 @@
             return d.nodeName;
           })
           .attr('style', function(d, i) {
-            return "fill: " + d.color + ";";
+            return 'fill: ' + d.color;
           })
-          .attr('x', function(d, i) { return d.cx; })
           .attr('y', function(d, i) { 
             if (d.group === 1) {
               return d.y + 20;
@@ -212,18 +198,14 @@
               return d.y - 20; 
             }
           })
-          .attr('transform', function(d) {
-            if (d.group === 1) {
-              return 'rotate(270 ' + (d.cx) + ',' + (d.y + 20) + ')'
-            } else {
-              return 'rotate(-270 ' + (d.cx) + ',' + (d.y - 20) + ')'
-            }
-          })
+          .attr('x', function(d, i) { return d.cx; })
           .transition()
           .delay(1500)
           .attr('transform', function(d) {
-            return 'translate(' + (width / 2 - d.cx) + ', 0)';
-          });
+            return 'translate(' + (width / 2 - d.cx - 120) + ', 0)';
+          })
+          .attr('class', 'highlight')
+          .attr('y', function(d) { return 100; });
 
       setTimeout(function() {
         createGraph(data, g, centerColor);
@@ -283,13 +265,33 @@
         .attr('transform', function(d) {
           if (d.group === 1) {
             return 'rotate(90 ' + (d.cx) + ',' + (d.y + 20) + ')'
-          } else {
+          } else if (d.group === 2) {
             return 'rotate(-90 ' + (d.cx) + ',' + (d.y - 20) + ')'
           }
         })
       .on('click', function(d) {
         redraw(d);
       });
+
+    // g.selectAll('line')
+    //   .data([obj])
+    //   .enter()
+    //   .append('line')
+    //     .attr('style', function(d, i) {
+    //       return 'stroke: ' + d.color;
+    //     })
+    //     .attr('x1', function(d) {
+    //       return width / 2;
+    //     })
+    //     .attr('y1', function(d) {
+    //       return 110;
+    //     })
+    //     .attr('x2', function(d) {
+    //       return width / 2;
+    //     })
+    //     .attr('y2', function(d) {
+    //       return d.y - 10;
+    //     });
 
     // Draw arcs
     links.forEach(function(d, i) {
